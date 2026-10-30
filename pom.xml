@@ -48,16 +48,15 @@
                 <artifactId>jetty-ee10-maven-plugin</artifactId>
                 <version>${jetty.version}</version>
 
-                
-<configuration>
-    <httpConnector>
-        <port>8080</port>
-    </httpConnector>
-    <webApp>
-        <contextPath>/</contextPath>
-        <tempDirectory>C:\telecom-jetty-tmp</tempDirectory>
-    </webApp>
-</configuration>
+                <configuration>
+                    <httpConnector>
+                        <port>8080</port>
+                    </httpConnector>
+                    <webApp>
+                        <contextPath>/</contextPath>
+                        <tempDirectory>${project.build.directory}/jetty-tmp</tempDirectory>
+                    </webApp>
+                </configuration>
 
             </plugin>
 

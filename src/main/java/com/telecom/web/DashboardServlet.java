@@ -1,4 +1,3 @@
-
 package com.telecom.web;
 
 import com.telecom.util.DatabaseConnection;
@@ -35,6 +34,7 @@ public class DashboardServlet extends HttpServlet {
         int alerts = 0;
         int optimizationResults = 0;
         int kpiRecords = 0;
+        String errorMessage = null;
 
         try (Connection connection =
                      DatabaseConnection.getConnection()) {
@@ -51,6 +51,9 @@ public class DashboardServlet extends HttpServlet {
         } catch (Exception e) {
             getServletContext().log(
                     "Unable to load dashboard statistics.", e);
+            Throwable root = DatabaseConnection.getRootCause(e);
+            errorMessage = "Unable to load records. Check the database connection ("
+                    + root.getClass().getSimpleName() + ": " + root.getMessage() + ")";
         }
 
         out.println("<!DOCTYPE html>");
@@ -71,10 +74,14 @@ public class DashboardServlet extends HttpServlet {
         out.println(".nav a:hover { color:#1d4ed8; }");
         out.println(".container { padding:35px 40px; }");
         out.println(".section-title { font-size:22px; margin-bottom:20px; }");
+        out.println(".alert-banner { background:#fee2e2; border:1px solid #f87171; border-left:6px solid #dc2626; color:#991b1b; padding:16px 20px; border-radius:8px; margin-bottom:25px; }");
+        out.println(".alert-banner strong { font-size:15px; }");
+        out.println(".alert-banner p { margin:6px 0 0; font-size:13px; color:#7f1d1d; }");
         out.println(".dashboard { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; }");
         out.println(".card { background:white; padding:25px; border-radius:12px; box-shadow:0 3px 12px rgba(0,0,0,0.08); border:1px solid #e5e7eb; }");
         out.println(".card-title { font-size:15px; color:#64748b; margin-bottom:12px; }");
         out.println(".card-value { font-size:34px; font-weight:bold; color:#1d4ed8; }");
+        out.println(".card-value.unavailable { color:#94a3b8; font-size:28px; }");
         out.println(".card-description { font-size:13px; color:#64748b; margin-top:8px; }");
         out.println(".footer { text-align:center; padding:25px; margin-top:40px; color:#64748b; font-size:13px; }");
         out.println("@media(max-width:900px) { .dashboard { grid-template-columns:repeat(2,minmax(0,1fr)); } }");
@@ -109,22 +116,41 @@ public class DashboardServlet extends HttpServlet {
         // Network overview cards
         out.println("<main class='container'>");
         out.println("<div class='section-title'>Network Overview</div>");
+
+        if (errorMessage != null) {
+            out.println("<div class='alert-banner'>");
+            out.println("<strong>Database Connection Alert:</strong> " + esc(errorMessage));
+            out.println("<p>Unable to retrieve statistics because the database could not be reached. "
+                    + "Please check database availability and connection settings.</p>");
+            out.println("</div>");
+        }
+
         out.println("<div class='dashboard'>");
 
-        createCard(out, "Network Cells", networkCells,
-                "Registered network cells");
-        createCard(out, "Devices", devices,
-                "Registered network devices");
-        createCard(out, "Subscribers", subscribers,
-                "Total subscribers");
-        createCard(out, "Traffic Records", trafficRecords,
-                "Recorded traffic data");
-        createCard(out, "Alerts", alerts,
-                "Network alerts");
-        createCard(out, "Optimization Results", optimizationResults,
-                "Generated optimization results");
-        createCard(out, "KPI Records", kpiRecords,
-                "Recorded network performance indicators");
+        String cellVal = errorMessage == null ? String.valueOf(networkCells) : "N/A";
+        String deviceVal = errorMessage == null ? String.valueOf(devices) : "N/A";
+        String subVal = errorMessage == null ? String.valueOf(subscribers) : "N/A";
+        String trafficVal = errorMessage == null ? String.valueOf(trafficRecords) : "N/A";
+        String alertVal = errorMessage == null ? String.valueOf(alerts) : "N/A";
+        String optVal = errorMessage == null ? String.valueOf(optimizationResults) : "N/A";
+        String kpiVal = errorMessage == null ? String.valueOf(kpiRecords) : "N/A";
+
+        String suffix = errorMessage == null ? "" : " (Unavailable)";
+
+        createCard(out, "Network Cells", cellVal,
+                "Registered network cells" + suffix, errorMessage != null);
+        createCard(out, "Devices", deviceVal,
+                "Registered network devices" + suffix, errorMessage != null);
+        createCard(out, "Subscribers", subVal,
+                "Total subscribers" + suffix, errorMessage != null);
+        createCard(out, "Traffic Records", trafficVal,
+                "Recorded traffic data" + suffix, errorMessage != null);
+        createCard(out, "Alerts", alertVal,
+                "Network alerts" + suffix, errorMessage != null);
+        createCard(out, "Optimization Results", optVal,
+                "Generated optimization results" + suffix, errorMessage != null);
+        createCard(out, "KPI Records", kpiVal,
+                "Recorded network performance indicators" + suffix, errorMessage != null);
 
         out.println("</div>");
         out.println("</main>");
@@ -158,13 +184,23 @@ public class DashboardServlet extends HttpServlet {
     private void createCard(
             PrintWriter out,
             String title,
-            int value,
-            String description) {
+            String value,
+            String description,
+            boolean isUnavailable) {
 
         out.println("<div class='card'>");
-        out.println("<div class='card-title'>" + title + "</div>");
-        out.println("<div class='card-value'>" + value + "</div>");
-        out.println("<div class='card-description'>" + description + "</div>");
+        out.println("<div class='card-title'>" + esc(title) + "</div>");
+        out.println("<div class='card-value" + (isUnavailable ? " unavailable" : "") + "'>" + esc(value) + "</div>");
+        out.println("<div class='card-description'>" + esc(description) + "</div>");
         out.println("</div>");
+    }
+
+    private String esc(String text) {
+        if (text == null) return "";
+        return text.replace("&", "&amp;")
+                   .replace("<", "&lt;")
+                   .replace(">", "&gt;")
+                   .replace("\"", "&quot;")
+                   .replace("'", "&#39;");
     }
 }
