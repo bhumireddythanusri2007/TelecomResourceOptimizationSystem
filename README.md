@@ -176,7 +176,7 @@ The application is deployed across three services:
 - **Aiven:** Provides the hosted MySQL database.
 
 **Live Application:**  
-https://telecom-resource-optimization-systems-gmi9fcl5i.vercel.app/
+https://telecom-resource-optimization-syste-five.vercel.app/
 
 ## Future Scope
 
