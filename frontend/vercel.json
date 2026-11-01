@@ -1,0 +1,17 @@
+{
+  "rewrites": [
+    { "source": "/dashboard", "destination": "https://telecomresourceoptimizationsystem.onrender.com/dashboard" },
+    { "source": "/network-cells", "destination": "https://telecomresourceoptimizationsystem.onrender.com/network-cells" },
+    { "source": "/devices", "destination": "https://telecomresourceoptimizationsystem.onrender.com/devices" },
+    { "source": "/subscribers", "destination": "https://telecomresourceoptimizationsystem.onrender.com/subscribers" },
+    { "source": "/traffic-flows", "destination": "https://telecomresourceoptimizationsystem.onrender.com/traffic-flows" },
+    { "source": "/resource-allocation", "destination": "https://telecomresourceoptimizationsystem.onrender.com/resource-allocation" },
+    { "source": "/network-slices", "destination": "https://telecomresourceoptimizationsystem.onrender.com/network-slices" },
+    { "source": "/edge-servers", "destination": "https://telecomresourceoptimizationsystem.onrender.com/edge-servers" },
+    { "source": "/optimization", "destination": "https://telecomresourceoptimizationsystem.onrender.com/optimization" },
+    { "source": "/kpi-monitoring", "destination": "https://telecomresourceoptimizationsystem.onrender.com/kpi-monitoring" },
+    { "source": "/users", "destination": "https://telecomresourceoptimizationsystem.onrender.com/users" },
+    { "source": "/alerts", "destination": "https://telecomresourceoptimizationsystem.onrender.com/alerts" },
+    { "source": "/reports", "destination": "https://telecomresourceoptimizationsystem.onrender.com/reports" }
+  ]
+}
